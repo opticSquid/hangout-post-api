@@ -19,7 +19,7 @@
 		<spring-cloud.version>2023.0.3</spring-cloud.version>
 		<minio.version>8.5.14</minio.version>
 		<spring-doc.version>2.6.0</spring-doc.version>
-		<otel-appender.version>2.10.0-alpha</otel-appender.version>
+		<otel-appender.version>2.13.0-alpha</otel-appender.version>
 		<geolatte.version>1.8.2</geolatte.version>
 	</properties>
 	<dependencies>
