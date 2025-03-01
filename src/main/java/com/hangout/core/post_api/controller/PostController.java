@@ -1,5 +1,6 @@
 package com.hangout.core.post_api.controller;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -71,5 +72,11 @@ public class PostController {
     @GetMapping("/{postId}")
     public GetParticularPostProjection getAParticularPost(@PathVariable UUID postId) {
         return this.postService.getParticularPost(postId);
+    }
+
+    @Observed(name = "get my posts", contextualName = "controller")
+    @PostMapping("/my-posts")
+    public List<GetParticularPostProjection> getMyPosts(@RequestHeader(name = "Authorization") String authToken) {
+        return this.postService.getMyPosts(authToken);
     }
 }

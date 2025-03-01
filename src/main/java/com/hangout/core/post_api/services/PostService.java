@@ -131,6 +131,7 @@ public class PostService {
         return postsList;
     }
 
+    @Observed(name = "get-particular-post", contextualName = "service")
     public GetParticularPostProjection getParticularPost(UUID postId) {
         Optional<GetParticularPostProjection> maybepost = postRepo.getParticularPost(postId);
         if (maybepost.isPresent()) {
@@ -138,6 +139,12 @@ public class PostService {
         } else {
             return null;
         }
+    }
+
+    @Observed(name = "get my posts", contextualName = "service")
+    public List<GetParticularPostProjection> getMyPosts(String authToken) {
+        Session session = authorizeUser(authToken);
+        return postRepo.getPostsByOwnerId(session.userId());
     }
 
     public void increaseHeartCount(UUID postId) {
