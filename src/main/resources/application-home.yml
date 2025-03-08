@@ -26,26 +26,10 @@ logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
-# All traces should be sent to latency analysis tool
-management:
-  otlp:
-    metrics:
-      export:
-        url: http://localhost:4318/v1/metrics
-  tracing:
-    sampling:
-      probability: 1.0
-  endpoints:
-    web:
-      exposure:
-        include: prometheus, health
-  # For Exemplars to work we need histogram buckets
-  metrics:
-    distribution:
-      percentiles-histogram:
-        http:
-          server:
-            requests: true
+otel:
+  exporter:
+    otlp:
+      endpoint: http://localhost:4318
 
 minio:
   url: http://localhost:9000
@@ -65,8 +49,6 @@ hangout:
     url: http://localhost:5011
   media:
     upload-bucket: hangout-upload-path
-  otel-collector:
-    url: http://localhost:4318
   allowed-origins:
     url: http://localhost:3000,
   page-length: 25

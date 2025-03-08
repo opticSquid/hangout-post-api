@@ -15,7 +15,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Configuration
 public class ObjectMapperConfig {
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+    Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
         CoordinateReferenceSystem<G2D> crs = WGS84;
         return builder -> builder
                 .serializationInclusion(JsonInclude.Include.NON_NULL)

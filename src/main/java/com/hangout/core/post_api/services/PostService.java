@@ -10,11 +10,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hangout.core.post_api.dto.FileUploadEvent;
@@ -24,7 +21,6 @@ import com.hangout.core.post_api.dto.GetPostsDTO;
 import com.hangout.core.post_api.dto.PostCreationResponse;
 import com.hangout.core.post_api.dto.PostsList;
 import com.hangout.core.post_api.dto.Session;
-import com.hangout.core.post_api.dto.UserValidationRequest;
 import com.hangout.core.post_api.entities.Media;
 import com.hangout.core.post_api.entities.Post;
 import com.hangout.core.post_api.exceptions.FileUploadFailed;
@@ -32,10 +28,11 @@ import com.hangout.core.post_api.exceptions.UnauthorizedAccessException;
 import com.hangout.core.post_api.exceptions.UnsupportedMediaType;
 import com.hangout.core.post_api.repositories.MediaRepo;
 import com.hangout.core.post_api.repositories.PostRepo;
+import com.hangout.core.post_api.utils.AuthorizationService;
 import com.hangout.core.post_api.utils.FileUploadService;
 import com.hangout.core.post_api.utils.HashService;
 
-import io.micrometer.observation.annotation.Observed;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,24 +43,22 @@ import lombok.extern.slf4j.Slf4j;
 public class PostService {
     private final PostRepo postRepo;
     private final MediaRepo mediaRepo;
-    private final RestClient restClient;
+    private final AuthorizationService authorizationService;
     private final HashService hashService;
     private final FileUploadService fileUploadService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-    @Value("${hangout.auth-service.url}")
-    private String authServiceURL;
     @Value("${hangout.kafka.content.topic}")
     private String topic;
     @Value("${hangout.page-length}")
     private Integer pageLength;
 
-    @Observed(name = "create-post", contextualName = "create post service")
+    @WithSpan(value = "create-post service")
     @Transactional
     public PostCreationResponse create(String authToken, MultipartFile file,
             Optional<String> postDescription, String state, String city, Double lat, Double lon)
             throws FileUploadException {
-        Session session = authorizeUser(authToken);
+        Session session = authorizationService.authorizeUser(authToken);
         // check if the session is trusted
         if (!session.trustedDevice()) {
             throw new UnauthorizedAccessException("Can not create new post from an untrusted device");
@@ -110,7 +105,7 @@ public class PostService {
         }
     }
 
-    @Observed(name = "get-near-by-posts", contextualName = "service")
+    @WithSpan(value = "get-near-by-posts service")
     public PostsList findNearByPosts(GetPostsDTO searchParams) {
         log.debug("search params: {}", searchParams);
         Integer pageNumber = searchParams.pageNumber() > 1 ? searchParams.pageNumber() : 1;
@@ -131,7 +126,7 @@ public class PostService {
         return postsList;
     }
 
-    @Observed(name = "get-particular-post", contextualName = "service")
+    @WithSpan(value = "get-particular-post service")
     public GetParticularPostProjection getParticularPost(UUID postId) {
         Optional<GetParticularPostProjection> maybepost = postRepo.getParticularPost(postId);
         if (maybepost.isPresent()) {
@@ -141,12 +136,13 @@ public class PostService {
         }
     }
 
-    @Observed(name = "get my posts", contextualName = "service")
+    @WithSpan(value = "get-my-posts service")
     public List<GetParticularPostProjection> getMyPosts(String authToken) {
-        Session session = authorizeUser(authToken);
+        Session session = authorizationService.authorizeUser(authToken);
         return postRepo.getPostsByOwnerId(session.userId());
     }
 
+    @WithSpan(value = "increase heart count service")
     public void increaseHeartCount(UUID postId) {
         postRepo.increaseHeartCount(postId);
     }
@@ -161,7 +157,7 @@ public class PostService {
      * @param file
      * @param internalFilename
      */
-    @Observed(name = "create-post", contextualName = "upload media service")
+    @WithSpan(value = "create-post file upload service")
     private void uploadMedias(Session session, MultipartFile file, String internalFilename) {
         fileUploadService.uploadFile(internalFilename, file);
         try {
@@ -172,22 +168,7 @@ public class PostService {
         }
     }
 
-    private Session authorizeUser(String authHeader) {
-        ResponseEntity<Session> response = restClient
-                .post()
-                .uri(authServiceURL + "/auth-api/v1/internal/validate")
-                .body(new UserValidationRequest(authHeader))
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .toEntity(Session.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        } else {
-            throw new UnauthorizedAccessException(
-                    "User is not valid or user does not have permission to perform current action");
-        }
-    }
-
+    @WithSpan(value = "convert to Point data type service")
     private Point buildPoint(Double lat, Double lon) {
         return geometryFactory.createPoint(new Coordinate(lon, lat));
     }
