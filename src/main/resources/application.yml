@@ -4,7 +4,7 @@ server:
     context-path: /post-api
 spring:
   application:
-    name: hangout-post-service
+    name: hangout-post-api
   servlet:
     multipart:
       max-file-size: 1GB
@@ -53,17 +53,13 @@ management:
   tracing:
     sampling:
       probability: 1.0
+  otlp:
+    tracing:
+      compression: gzip
   endpoints:
     web:
       exposure:
         include: prometheus, health
-  otlp:
-    # configures the endpoint to send OTLP metrics. (Does not support GRPC)
-    metrics:
-      export:
-        url: ${OTEL_COLLECTOR}/v1/metrics
-    tracing:
-      compression: gzip
   # For Exemplars to work we need histogram buckets
   metrics:
     distribution:
@@ -71,6 +67,14 @@ management:
         http:
           server:
             requests: true
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${OTEL_COLLECTOR}
+  instrumentation:
+    micrometer:
+      enabled: true
 
 springdoc:
   api-docs:
@@ -106,8 +110,6 @@ hangout:
     url: ${AUTH_SERVICE}
   media:
     upload-bucket: ${UPLOAD_BUCKET}
-  otel-collector:
-    url: ${OTEL_COLLECTOR}
   allowed-origins:
     url: ${CLIENT_ORIGINS}
   page-length: ${PAGE_LENGTH}

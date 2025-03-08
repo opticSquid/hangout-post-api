@@ -4,18 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 import com.hangout.core.post_api.dto.CommentCreationResponse;
 import com.hangout.core.post_api.dto.CommentDTO;
 import com.hangout.core.post_api.dto.NewCommentRequest;
 import com.hangout.core.post_api.dto.Reply;
 import com.hangout.core.post_api.dto.Session;
-import com.hangout.core.post_api.dto.UserValidationRequest;
 import com.hangout.core.post_api.entities.Comment;
 import com.hangout.core.post_api.entities.HierarchyKeeper;
 import com.hangout.core.post_api.entities.Post;
@@ -25,23 +20,25 @@ import com.hangout.core.post_api.projections.FetchCommentProjection;
 import com.hangout.core.post_api.repositories.CommentRepo;
 import com.hangout.core.post_api.repositories.HierarchyKeeperRepo;
 import com.hangout.core.post_api.repositories.PostRepo;
+import com.hangout.core.post_api.utils.AuthorizationService;
 
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    private final RestClient restClient;
     private final PostRepo postRepo;
     private final CommentRepo commentRepo;
     private final HierarchyKeeperRepo hkRepo;
-    @Value("${hangout.auth-service.url}")
-    private String authServiceURL;
+    private final AuthorizationService authorizationService;
 
+    @WithSpan(value = "create-top-level-comment service")
     @Transactional
     public CommentCreationResponse createTopLevelComment(String authToken, NewCommentRequest comment) {
-        Session session = authorizeUser(authToken);
+        Session session = authorizationService.authorizeUser(authToken);
         if (session.userId() != null) {
             Optional<Post> post = postRepo.findById(comment.postId());
             if (post.isPresent()) {
@@ -57,9 +54,10 @@ public class CommentService {
         }
     }
 
+    @WithSpan(value = "reply-to-comment service")
     @Transactional
     public CommentCreationResponse createSubComments(String authToken, Reply reply) {
-        Session session = authorizeUser(authToken);
+        Session session = authorizationService.authorizeUser(authToken);
         if (session.userId() != null) {
             Optional<Comment> maybeParentComment = commentRepo.findById(reply.parentCommentId());
             if (maybeParentComment.isPresent()) {
@@ -80,6 +78,7 @@ public class CommentService {
         }
     }
 
+    @WithSpan(value = "get-all-top-level-comments service")
     public List<CommentDTO> fetchTopLevelCommentsForAPost(UUID postId) {
         UUID postIdAsUUID = postId;
         List<FetchCommentProjection> model = commentRepo.fetchTopLevelComments(postIdAsUUID);
@@ -90,6 +89,7 @@ public class CommentService {
                 .toList();
     }
 
+    @WithSpan(value = "get-particular-comment service")
     public CommentDTO fetchParticularComment(UUID commentId) {
         Optional<FetchCommentProjection> comment = commentRepo.fetchCommentById(commentId);
         if (comment.isPresent()) {
@@ -102,6 +102,7 @@ public class CommentService {
 
     }
 
+    @WithSpan(kind = SpanKind.SERVER, value = "get-replies-to-a-comment service")
     public List<CommentDTO> fetchAllChildCommentsForAComment(UUID parentCommentId) {
         UUID parentCommentIdUUID = parentCommentId;
         List<FetchCommentProjection> model = hkRepo.findAllChildComments(parentCommentIdUUID);
@@ -110,21 +111,5 @@ public class CommentService {
                         comment.getCreatedAt(),
                         comment.getText(), comment.getUserId(), comment.getReplies()))
                 .toList();
-    }
-
-    private Session authorizeUser(String authHeader) {
-        ResponseEntity<Session> response = restClient
-                .post()
-                .uri(authServiceURL + "/auth-api/v1/internal/validate")
-                .body(new UserValidationRequest(authHeader))
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .toEntity(Session.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        } else {
-            throw new UnauthorizedAccessException(
-                    "User is not valid or user does not have permission to perform current action");
-        }
     }
 }

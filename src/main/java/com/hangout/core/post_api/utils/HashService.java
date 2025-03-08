@@ -9,6 +9,7 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -24,6 +25,7 @@ public class HashService {
      * @return new file name for internal use
      * @throws FileUploadException
      */
+    @WithSpan(value = "compute internal filename")
     public String computeInternalFilename(MultipartFile file) throws FileUploadException {
         byte[] data;
         try {

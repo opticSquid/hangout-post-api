@@ -17,7 +17,8 @@ import com.hangout.core.post_api.dto.NewCommentRequest;
 import com.hangout.core.post_api.dto.Reply;
 import com.hangout.core.post_api.services.CommentService;
 
-import io.micrometer.observation.annotation.Observed;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,33 +27,33 @@ import lombok.RequiredArgsConstructor;
 public class CommentController {
     private final CommentService commentService;
 
-    @Observed(name = "create-top-level-comment", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "create-top-level-comment controller")
     @PostMapping
     public CommentCreationResponse createTopLevelComment(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody NewCommentRequest comment) {
         return commentService.createTopLevelComment(authToken, comment);
     }
 
-    @Observed(name = "reply-to-comment", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "reply-to-comment controller")
     @PostMapping("/reply")
     public CommentCreationResponse createSubComment(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody Reply reply) {
         return commentService.createSubComments(authToken, reply);
     }
 
-    @Observed(name = "get-all-top-level-comments", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "get-all-top-level-comments controller")
     @GetMapping("/all/{postId}")
     public List<CommentDTO> getAllTopLevelComments(@PathVariable UUID postId) {
         return commentService.fetchTopLevelCommentsForAPost(postId);
     }
 
-    @Observed(name = "get-particular-comment", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "get-particular-comment controller")
     @GetMapping("/{commentId}")
     public CommentDTO getParticularComment(@PathVariable UUID commentId) {
         return commentService.fetchParticularComment(commentId);
     }
 
-    @Observed(name = "get-replies-to-a-comment", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "get-replies-to-a-comment controller")
     @GetMapping("/{commentId}/replies")
     public List<CommentDTO> getAllChildCommentsOfAParentComment(@PathVariable UUID commentId) {
         return commentService.fetchAllChildCommentsForAComment(commentId);

@@ -17,6 +17,8 @@ import com.hangout.core.post_api.dto.NewHeartRequest;
 import com.hangout.core.post_api.services.HeartService;
 import com.hangout.core.post_api.services.HeartServiceKafkaProducer;
 
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,18 +28,21 @@ public class HeartController {
     private final HeartServiceKafkaProducer heartKafkaProducer;
     private final HeartService heartService;
 
-    @PostMapping()
+    @WithSpan(kind = SpanKind.SERVER, value = "add heart")
+    @PostMapping
     public DefaultResponse addHeart(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody NewHeartRequest heartRequest) {
         return heartKafkaProducer.addHeart(authToken, heartRequest);
     }
 
-    @DeleteMapping()
+    @WithSpan(kind = SpanKind.SERVER, value = "remove heart")
+    @DeleteMapping
     public DefaultResponse removeHeart(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody NewHeartRequest heartRequest) {
         return heartKafkaProducer.removeHeart(authToken, heartRequest);
     }
 
+    @WithSpan(kind = SpanKind.SERVER, value = "get heart status")
     @GetMapping("/{postId}")
     public HasHearted hasHearted(@RequestHeader(name = "Authorization") String authToken, @PathVariable UUID postId) {
         return heartService.hasHearted(authToken, postId);

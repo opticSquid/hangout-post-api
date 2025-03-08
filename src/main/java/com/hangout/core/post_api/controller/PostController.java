@@ -24,7 +24,8 @@ import com.hangout.core.post_api.dto.PostCreationResponse;
 import com.hangout.core.post_api.dto.PostsList;
 import com.hangout.core.post_api.services.PostService;
 
-import io.micrometer.observation.annotation.Observed;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,48 +34,51 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
     private final PostService postService;
 
-    @Observed(name = "create-post", contextualName = "controller", lowCardinalityKeyValues = { "postType",
-            "MEDIA+TEXT" })
+    @WithSpan(kind = SpanKind.SERVER, value = "create-post with description controller")
     @PostMapping(path = "/full", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostCreationResponse> createPostWithMediasAndText(
             @RequestHeader(name = "Authorization") String authToken,
-            @RequestPart(value = "file") MultipartFile file,
             @RequestPart(value = "postDescription") String postDescription,
             @RequestPart(value = "state") String state,
             @RequestPart(value = "city") String city,
-            @RequestPart(value = "lat") Double lat,
-            @RequestPart(value = "lon") Double lon) throws FileUploadException {
+            @RequestPart(value = "lat") String lat,
+            @RequestPart(value = "lon") String lon,
+            @RequestPart(value = "file") MultipartFile file) throws FileUploadException {
         return new ResponseEntity<>(
-                this.postService.create(authToken, file, Optional.of(postDescription), state, city, lat, lon),
+                this.postService.create(authToken, file, Optional.of(postDescription), state, city,
+                        Double.parseDouble(lat), Double.parseDouble(lon)),
                 HttpStatus.CREATED);
     }
 
-    @Observed(name = "create-post", contextualName = "controller", lowCardinalityKeyValues = { "postType", "MEDIA" })
+    @WithSpan(kind = SpanKind.SERVER, value = "create-post without description")
     @PostMapping(path = "/short", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostCreationResponse> createPostWithMedias(
             @RequestHeader(name = "Authorization") String authToken,
-            @RequestPart(value = "file") MultipartFile file,
             @RequestPart(value = "state") String state,
             @RequestPart(value = "city") String city,
-            @RequestPart(value = "lat") Double lat,
-            @RequestPart(value = "lon") Double lon) throws FileUploadException {
-        return new ResponseEntity<>(this.postService.create(authToken, file, Optional.empty(), state, city, lat, lon),
+            @RequestPart(value = "lat") String lat,
+            @RequestPart(value = "lon") String lon,
+            @RequestPart(value = "file") MultipartFile file)
+            throws FileUploadException {
+        return new ResponseEntity<>(
+                this.postService.create(authToken, file, Optional.empty(), state, city, Double.parseDouble(lat),
+                        Double.parseDouble(lon)),
                 HttpStatus.CREATED);
     }
 
-    @Observed(name = "get-all-posts", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "get-all-posts controller")
     @PostMapping("/near-me")
     public PostsList getNearByPosts(@RequestBody GetPostsDTO getPostParams) {
         return this.postService.findNearByPosts(getPostParams);
     }
 
-    @Observed(name = "get-particular-post", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "get-particular-post controller")
     @GetMapping("/{postId}")
     public GetParticularPostProjection getAParticularPost(@PathVariable UUID postId) {
         return this.postService.getParticularPost(postId);
     }
 
-    @Observed(name = "get my posts", contextualName = "controller")
+    @WithSpan(kind = SpanKind.SERVER, value = "get my posts controller")
     @GetMapping("/my-posts")
     public List<GetParticularPostProjection> getMyPosts(@RequestHeader(name = "Authorization") String authToken) {
         return this.postService.getMyPosts(authToken);

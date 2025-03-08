@@ -20,6 +20,8 @@ import io.minio.errors.InternalException;
 import io.minio.errors.InvalidResponseException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -37,6 +39,7 @@ public class FileUploadService {
      * @param multipartFile file object to be stored
      * @return returns true if file upload is successful
      */
+    @WithSpan(kind = SpanKind.CLIENT, value = "cloud storage call")
     public void uploadFile(String internalName, MultipartFile multipartFile) {
         try {
             ObjectWriteResponse writeResponse = minioClient

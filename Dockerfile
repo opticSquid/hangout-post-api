@@ -12,6 +12,6 @@ FROM amazoncorretto:21-alpine
 
 WORKDIR /app
 
-COPY --from=builder /usr/src/app/target/hangout-post-api-1.2.5.jar .
+COPY --from=builder /usr/src/app/target/hangout-post-api-1.3.0.jar .
 
-CMD ["java", "-jar", "hangout-post-api-1.2.5.jar"]
+CMD ["java", "-jar", "hangout-post-api-1.3.0.jar"]

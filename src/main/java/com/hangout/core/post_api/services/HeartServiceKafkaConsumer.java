@@ -14,6 +14,8 @@ import com.hangout.core.post_api.entities.Post;
 import com.hangout.core.post_api.repositories.HeartRepo;
 import com.hangout.core.post_api.repositories.PostRepo;
 
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,7 @@ public class HeartServiceKafkaConsumer {
     private final HeartRepo heartRepo;
     private final PostRepo postRepo;
 
+    @WithSpan(kind = SpanKind.CONSUMER, value = "heart topic batch consumer")
     @KafkaListener(topics = "${hangout.kafka.heart.topic}", groupId = "${spring.application.name}", containerFactory = "batchEventContainerFactory")
     public void consumeHeartEvent(List<HeartEvent> heartEvent) {
         List<HeartEvent> addHeartList = new ArrayList<>();
@@ -38,6 +41,7 @@ public class HeartServiceKafkaConsumer {
         removeHeart(removeHeartList);
     }
 
+    @WithSpan(value = "add Heart function - iterative")
     @Transactional
     private void addHeart(List<HeartEvent> heartEvents) {
         List<Heart> heartList = new ArrayList<>();
@@ -55,6 +59,7 @@ public class HeartServiceKafkaConsumer {
         heartRepo.saveAll(heartList);
     }
 
+    @WithSpan(value = "remove Heart function - iterative")
     @Transactional
     private void removeHeart(List<HeartEvent> heartEvents) {
         heartEvents.forEach(h -> {
