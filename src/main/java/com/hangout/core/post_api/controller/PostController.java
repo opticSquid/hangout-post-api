@@ -41,11 +41,12 @@ public class PostController {
             @RequestPart(value = "postDescription") String postDescription,
             @RequestPart(value = "state") String state,
             @RequestPart(value = "city") String city,
-            @RequestPart(value = "lat") Double lat,
-            @RequestPart(value = "lon") Double lon,
+            @RequestPart(value = "lat") String lat,
+            @RequestPart(value = "lon") String lon,
             @RequestPart(value = "file") MultipartFile file) throws FileUploadException {
         return new ResponseEntity<>(
-                this.postService.create(authToken, file, Optional.of(postDescription), state, city, lat, lon),
+                this.postService.create(authToken, file, Optional.of(postDescription), state, city,
+                        Double.parseDouble(lat), Double.parseDouble(lon)),
                 HttpStatus.CREATED);
     }
 
@@ -55,11 +56,13 @@ public class PostController {
             @RequestHeader(name = "Authorization") String authToken,
             @RequestPart(value = "state") String state,
             @RequestPart(value = "city") String city,
-            @RequestPart(value = "lat") Double lat,
-            @RequestPart(value = "lon") Double lon,
+            @RequestPart(value = "lat") String lat,
+            @RequestPart(value = "lon") String lon,
             @RequestPart(value = "file") MultipartFile file)
             throws FileUploadException {
-        return new ResponseEntity<>(this.postService.create(authToken, file, Optional.empty(), state, city, lat, lon),
+        return new ResponseEntity<>(
+                this.postService.create(authToken, file, Optional.empty(), state, city, Double.parseDouble(lat),
+                        Double.parseDouble(lon)),
                 HttpStatus.CREATED);
     }
 

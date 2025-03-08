@@ -33,8 +33,8 @@ otel:
 
 minio:
   url: http://localhost:9000
-  accessKey: IevColMiX5eBAZUPmfN6
-  secretKey: G8HC3uphX1TlDDYSxtjTrFSVdRe95XJXV2IhqEYg
+  accessKey: sy22NKhjmHHCxGkSxn4h
+  secretKey: iBfNydMCIC1KT4qBAj8RB8kaMLpXZ5yI41CTf6Ox
 
 hangout:
   kafka:

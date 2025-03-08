@@ -4,7 +4,7 @@ server:
     context-path: /post-api
 spring:
   application:
-    name: hangout-post-service
+    name: hangout-post-api
   servlet:
     multipart:
       max-file-size: 1GB
