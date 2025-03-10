@@ -20,7 +20,7 @@
 		<spring-doc.version>2.6.0</spring-doc.version>
 		<otel-appender.version>2.10.0-alpha</otel-appender.version>
 		<geolatte.version>1.8.2</geolatte.version>
-		<otel.version>2.13.1</otel.version>
+		<otel.version>2.13.3</otel.version>
 	</properties>
 	<dependencies>
 		<!--START
