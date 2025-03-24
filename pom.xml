@@ -19,7 +19,7 @@
 		<minio.version>8.5.14</minio.version>
 		<spring-doc.version>2.6.0</spring-doc.version>
 		<otel-appender.version>2.10.0-alpha</otel-appender.version>
-		<geolatte.version>1.8.2</geolatte.version>
+		<geolatte.version>1.10</geolatte.version>
 		<otel.version>2.13.1</otel.version>
 	</properties>
 	<dependencies>
