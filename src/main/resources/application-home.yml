@@ -54,3 +54,5 @@ hangout:
   page-length: 25
   log:
     path: /home/soumalya/Development/Hangout/core-services/hangout-post-api/logs
+  address-api:
+    base-url: https://api.geoapify.com/v1/geocode/reverse

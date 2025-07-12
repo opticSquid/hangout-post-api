@@ -69,6 +69,16 @@
             "name": "hangout.kafka.heart.fetchMaxWaitMs",
             "type": "java.lang.Integer",
             "description": "Indicates the wait time for each consumer for more data to buffer"
+        },
+        {
+            "name": "hangout.address-api.base-url",
+            "type": "java.lang.String",
+            "description": "Base URI of address api"
+        },
+        {
+            "name": "hangout.address-api.api-key",
+            "type": "java.lang.String",
+            "description": "API Key of address api"
         }
     ]
 }
