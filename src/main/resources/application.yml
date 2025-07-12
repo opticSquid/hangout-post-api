@@ -115,3 +115,6 @@ hangout:
   page-length: ${PAGE_LENGTH}
   log:
     path: ${LOG_DIR}
+  address-api:
+    base-url: ${ADDRESS_API_URL}
+    api-key: ${ADDRESS_API_KEY}

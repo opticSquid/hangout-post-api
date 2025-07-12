@@ -38,3 +38,6 @@ build/
 
 ### log files ###
 *.log
+
+### application secret file ###
+application-secret.yaml
