@@ -14,6 +14,4 @@ WORKDIR /app
 
 COPY --from=builder /usr/src/app/target/hangout-post-api-1.4.0.jar .
 
-ENV JAVA_OPTS="-Dotel.java.global-autoconfigure.enabled=true"
-
-CMD ["java", "$JAVA_OPTS", "-jar", "hangout-post-api-1.4.0.jar"]
+CMD ["java", "-Dotel.java.global-autoconfigure.enabled=true", "-jar", "hangout-post-api-1.4.0.jar"]
