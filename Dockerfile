@@ -12,6 +12,6 @@ FROM amazoncorretto:21-alpine
 
 WORKDIR /app
 
-COPY --from=builder /usr/src/app/target/hangout-post-api-1.4.1.jar .
+COPY --from=builder /usr/src/app/target/hangout-post-api-1.4.2.jar .
 
-CMD ["java", "-Dotel.java.global-autoconfigure.enabled=true", "-jar", "hangout-post-api-1.4.1.jar"]
+CMD ["java", "-jar", "hangout-post-api-1.4.2.jar"]
