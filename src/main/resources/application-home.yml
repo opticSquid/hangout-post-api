@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postdb
+    url: jdbc:postgresql://localhost:5432/posts
     username: postgres
     password: PkNLm@#2357
   jpa:
@@ -29,7 +29,8 @@ logging:
 otel:
   exporter:
     otlp:
-      endpoint: http://localhost:4318
+      protocol: grpc
+      endpoint: http://localhost:4317
 
 minio:
   url: http://localhost:9000
@@ -46,13 +47,13 @@ hangout:
       fetchMinBytes: 1024
       fetchMaxWaitMs: 10000
   auth-service:
-    url: http://localhost:5011
+    url: http://localhost:80/auth-api/v1
   media:
-    upload-bucket: hangout-upload-path
+    upload-bucket: upload
   allowed-origins:
-    url: http://localhost:3000,
+    url: http://localhost:5137,
   page-length: 25
   log:
     path: /home/soumalya/Development/Hangout/core-services/hangout-post-api/logs
   address-api:
-    base-url: https://api.geoapify.com/v1/geocode/reverse
+    base-url: https://api.geoapify.com

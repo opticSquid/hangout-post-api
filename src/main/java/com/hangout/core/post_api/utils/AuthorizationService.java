@@ -1,9 +1,11 @@
 package com.hangout.core.post_api.utils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.hangout.core.post_api.dto.Session;
@@ -21,21 +23,26 @@ public class AuthorizationService {
     private String authServiceURL;
     private final RestClient restClient;
 
-    @WithSpan(kind = SpanKind.CLIENT, value = "authorize user service")
+    @WithSpan(kind = SpanKind.CLIENT, value = "authorize user service - auth api call")
     public Session authorizeUser(String authToken) {
-        ResponseEntity<Session> response = restClient
-                .post()
-                .uri(authServiceURL + "/auth-api/v1/internal/validate")
-                .body(new UserValidationRequest(authToken))
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .toEntity(Session.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
+        try {
+            ResponseEntity<Session> response = restClient
+                    .post()
+                    .uri(authServiceURL + "/internal/validate")
+                    .body(new UserValidationRequest(authToken))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(Session.class);
             return response.getBody();
-        } else {
-            throw new UnauthorizedAccessException(
-                    "User is not valid or user does not have permission to perform current action");
+        } catch (HttpClientErrorException exception) {
+            if (exception.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                throw new UnauthorizedAccessException(
+                        "User's token has expired or user token is not valid");
+            } else {
+                throw exception;
+            }
         }
+
     }
 
 }

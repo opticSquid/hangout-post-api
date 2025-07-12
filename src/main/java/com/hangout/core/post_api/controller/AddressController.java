@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hangout.core.post_api.dto.response.AddressDetails;
@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 public class AddressController {
     private final AddressService addressService;
 
-    @WithSpan(kind = SpanKind.SERVER, value = "get details of address from location")
+    @WithSpan(kind = SpanKind.SERVER, value = "get details of address from location controller")
     @GetMapping(path = "/get-details")
     public ResponseEntity<AddressDetails> getAddressDetails(
-            @RequestHeader(name = "Authorization") String authToken, @RequestPart(value = "lat") Double lat,
-            @RequestPart(value = "lon") Double lon) {
+            @RequestHeader(name = "Authorization") String authToken, @RequestParam Double lat,
+            @RequestParam Double lon) {
         Optional<AddressDetails> addressDetails = addressService.getAddressDetails(authToken, lat, lon);
         if (addressDetails.isPresent()) {
             return ResponseEntity.ok().body(addressDetails.get());
