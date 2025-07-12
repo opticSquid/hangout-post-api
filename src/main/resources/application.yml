@@ -71,6 +71,7 @@ management:
 otel:
   exporter:
     otlp:
+      protocol: grpc
       endpoint: ${OTEL_COLLECTOR}
   instrumentation:
     micrometer:

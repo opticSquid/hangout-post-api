@@ -29,7 +29,6 @@ logging:
 otel:
   exporter:
     otlp:
-      protocol: grpc
       endpoint: http://localhost:4317
 
 minio:
