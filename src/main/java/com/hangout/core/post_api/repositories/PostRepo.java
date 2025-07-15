@@ -59,7 +59,7 @@ public interface PostRepo extends JpaRepository<Post, UUID> {
                         @Param("offset") Integer offset,
                         @Param("limit") Integer limit);
 
-        @Query(value = "SELECT COUNT(*) AS POST_COUNT  FROM POST P JOIN MEDIA M ON P.FILENAME = M.FILENAME WHERE ST_DWITHIN(:userLocation, P.LOCATION, :maxSearchRadius) AND NOT ST_DWITHIN(:userLocation, P.LOCATION, :minSearchRadius);", nativeQuery = true)
+        @Query(value = "SELECT COUNT(POST_ID) AS POST_COUNT  FROM POST WHERE ST_DWITHIN(:userLocation, LOCATION, :maxSearchRadius) AND NOT ST_DWITHIN(:userLocation, LOCATION, :minSearchRadius);", nativeQuery = true)
         Integer getAllNearbyPostsCount(
                         @Param("userLocation") Point userLocation,
                         @Param("minSearchRadius") Double minSearchRadius,

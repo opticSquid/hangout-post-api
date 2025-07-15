@@ -114,15 +114,11 @@ public class PostService {
         List<GetNearbyPostsProjection> nearbyPosts = postRepo.getAllNearbyPosts(userLocation,
                 searchParams.minSearchRadius(), searchParams.maxSearchRadius(), offset, pageLength);
         PostsList postsList;
-        // * only return the count of all the posts in the first page itself.
-        if (pageNumber == 1) {
-            Integer totalCount = postRepo.getAllNearbyPostsCount(userLocation, searchParams.minSearchRadius(),
-                    searchParams.maxSearchRadius());
-            Integer totalPages = (int) Math.ceil((double) totalCount / pageLength);
-            postsList = new PostsList(nearbyPosts, totalPages);
-        } else {
-            postsList = new PostsList(nearbyPosts, null);
-        }
+
+        Integer totalCount = postRepo.getAllNearbyPostsCount(userLocation, searchParams.minSearchRadius(),
+                searchParams.maxSearchRadius());
+        Integer totalPages = (int) Math.ceil((double) totalCount / pageLength);
+        postsList = new PostsList(nearbyPosts, pageNumber, totalPages);
         return postsList;
     }
 
