@@ -82,7 +82,7 @@ public class PostService {
                 return new PostCreationResponse(post.getPostId());
             } else {
                 // is media is new
-                if (file.getContentType().startsWith("image/") || file.getContentType().startsWith("video/")) {
+                if (file.getContentType().startsWith("video/")) {
                     uploadMedias(session, file, internalFilename);
                     Media media = new Media(internalFilename, file.getContentType());
                     media = this.mediaRepo.save(media);
