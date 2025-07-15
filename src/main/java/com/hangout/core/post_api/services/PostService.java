@@ -157,8 +157,8 @@ public class PostService {
     private void uploadMedias(Session session, MultipartFile file, String internalFilename) {
         fileUploadService.uploadFile(internalFilename, file);
         try {
-            this.kafkaTemplate.send(topic, file.getContentType(),
-                    new FileUploadEvent(internalFilename, session.userId()));
+            this.kafkaTemplate.send(topic,
+                    new FileUploadEvent(internalFilename, file.getContentType(), session.userId()));
         } catch (IllegalStateException e) {
             throw new FileUploadFailed("Failed to produce kafka event for file: " + file.getOriginalFilename());
         }
