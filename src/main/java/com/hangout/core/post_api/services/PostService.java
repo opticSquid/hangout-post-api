@@ -10,6 +10,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@EnableCaching
 @Slf4j
 public class PostService {
     private final PostRepo postRepo;
@@ -106,6 +109,7 @@ public class PostService {
     }
 
     @WithSpan(value = "get-near-by-posts service")
+    @Cacheable("findNearbyPosts")
     public PostsList findNearByPosts(GetPostsDTO searchParams) {
         log.debug("search params: {}", searchParams);
         Integer pageNumber = searchParams.pageNumber() > 1 ? searchParams.pageNumber() : 1;

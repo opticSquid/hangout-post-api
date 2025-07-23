@@ -47,6 +47,11 @@ spring:
             trusted:
               packages: com.hangout.core.post_api.dto.event
       auto-offset-reset: earliest
+  cache:
+    cache-names:
+    - findNearbyPosts
+    caffeine:
+      spec: 'expiresAftrefreshAfterWrite=5m,expireAfterAccess=10m,maximumSize=50'
 
 # All traces should be sent to latency analysis tool
 management:
