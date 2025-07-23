@@ -23,6 +23,7 @@ public class CorsConfig {
                         .addMapping("/v1/**")
                         .allowedOriginPatterns(getAllowedOrigins(clientOrigins))
                         .allowedHeaders("*")
+                        .allowCredentials(true)
                         .allowedMethods(HttpMethod.OPTIONS.name(), HttpMethod.POST.name(), HttpMethod.GET.name(),
                                 HttpMethod.DELETE.name());
             }
