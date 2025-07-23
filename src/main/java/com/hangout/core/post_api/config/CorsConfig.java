@@ -24,8 +24,11 @@ public class CorsConfig {
                         .allowedOriginPatterns(getAllowedOrigins(clientOrigins))
                         .allowedHeaders("*")
                         .allowCredentials(true)
-                        .allowedMethods(HttpMethod.OPTIONS.name(), HttpMethod.POST.name(), HttpMethod.GET.name(),
-                                HttpMethod.DELETE.name());
+                        .allowedMethods(
+                                HttpMethod.OPTIONS.name(),
+                                HttpMethod.GET.name(),
+                                HttpMethod.POST.name(),
+                                HttpMethod.PUT.name());
             }
         };
     }
