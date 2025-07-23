@@ -2,10 +2,9 @@ package com.hangout.core.post_api.controller;
 
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,14 +28,14 @@ public class HeartController {
     private final HeartService heartService;
 
     @WithSpan(kind = SpanKind.SERVER, value = "add heart")
-    @PostMapping
+    @PutMapping
     public DefaultResponse addHeart(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody NewHeartRequest heartRequest) {
         return heartKafkaProducer.addHeart(authToken, heartRequest);
     }
 
     @WithSpan(kind = SpanKind.SERVER, value = "remove heart")
-    @DeleteMapping
+    @PutMapping
     public DefaultResponse removeHeart(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody NewHeartRequest heartRequest) {
         return heartKafkaProducer.removeHeart(authToken, heartRequest);
