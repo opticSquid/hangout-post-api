@@ -51,7 +51,7 @@ spring:
     cache-names:
     - findNearbyPosts
     caffeine:
-      spec: 'expiresAftrefreshAfterWrite=5m,expireAfterAccess=10m,maximumSize=50'
+      spec: maximumSize=50,expireAfterWrite=2m
 
 # All traces should be sent to latency analysis tool
 management:
