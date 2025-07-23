@@ -28,14 +28,14 @@ public class HeartController {
     private final HeartService heartService;
 
     @WithSpan(kind = SpanKind.SERVER, value = "add heart")
-    @PutMapping
+    @PutMapping("/add")
     public DefaultResponse addHeart(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody NewHeartRequest heartRequest) {
         return heartKafkaProducer.addHeart(authToken, heartRequest);
     }
 
     @WithSpan(kind = SpanKind.SERVER, value = "remove heart")
-    @PutMapping
+    @PutMapping("/remove")
     public DefaultResponse removeHeart(@RequestHeader(name = "Authorization") String authToken,
             @RequestBody NewHeartRequest heartRequest) {
         return heartKafkaProducer.removeHeart(authToken, heartRequest);
