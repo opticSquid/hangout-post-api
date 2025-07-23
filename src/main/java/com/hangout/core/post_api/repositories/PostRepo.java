@@ -51,7 +51,7 @@ public interface PostRepo extends JpaRepository<Post, UUID> {
         @Query(value = "UPDATE post SET publish = true where post_id = :postId", nativeQuery = true)
         void publish(@Param("postId") UUID postId);
 
-        @Query(value = "SELECT P.POST_ID, P.OWNER_ID, M.FILENAME, M.CONTENT_TYPE, P.POST_DESCRIPTION, P.HEARTS, P.COMMENTS, P.INTERACTIONS, P.CREATED_AT, P.STATE, P.CITY, P.LOCATION, ST_DISTANCE(:userLocation, P.LOCATION) AS DISTANCE FROM POST P JOIN MEDIA M ON P.FILENAME = M.FILENAME WHERE ST_DWITHIN(:userLocation, P.LOCATION, :maxSearchRadius) AND NOT ST_DWITHIN(:userLocation, P.LOCATION, :minSearchRadius) OFFSET :offset LIMIT :limit;", nativeQuery = true)
+        @Query(value = "SELECT P.POST_ID, P.OWNER_ID, M.FILENAME, M.CONTENT_TYPE, P.POST_DESCRIPTION, P.HEARTS, P.COMMENTS, P.INTERACTIONS, P.CREATED_AT, P.STATE, P.CITY, P.LOCATION, ST_DISTANCE(:userLocation, P.LOCATION) AS DISTANCE FROM POST P JOIN MEDIA M ON P.FILENAME = M.FILENAME WHERE ST_DWITHIN(:userLocation, P.LOCATION, :maxSearchRadius) AND NOT ST_DWITHIN(:userLocation, P.LOCATION, :minSearchRadius) AND M.PROCESS_STATUS='SUCCESS' OFFSET :offset LIMIT :limit;", nativeQuery = true)
         List<GetNearbyPostsProjection> getAllNearbyPosts(
                         @Param("userLocation") Point userLocation,
                         @Param("minSearchRadius") Double minSearchRadius,
@@ -59,7 +59,7 @@ public interface PostRepo extends JpaRepository<Post, UUID> {
                         @Param("offset") Integer offset,
                         @Param("limit") Integer limit);
 
-        @Query(value = "SELECT COUNT(POST_ID) AS POST_COUNT  FROM POST WHERE ST_DWITHIN(:userLocation, LOCATION, :maxSearchRadius) AND NOT ST_DWITHIN(:userLocation, LOCATION, :minSearchRadius);", nativeQuery = true)
+        @Query(value = "SELECT COUNT(P.POST_ID) AS POST_COUNT  FROM POST AS P JOIN MEDIA AS M ON P.FILENAME = M.FILENAME WHERE ST_DWITHIN(:userLocation, LOCATION, :maxSearchRadius) AND NOT ST_DWITHIN(:userLocation, LOCATION, :minSearchRadius) AND M.PROCESS_STATUS = 'SUCCESS';", nativeQuery = true)
         Integer getAllNearbyPostsCount(
                         @Param("userLocation") Point userLocation,
                         @Param("minSearchRadius") Double minSearchRadius,
