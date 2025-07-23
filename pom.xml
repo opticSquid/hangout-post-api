@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.hangout.core</groupId>
 	<artifactId>hangout-post-api</artifactId>
-	<version>1.5.6</version>
+	<version>1.5.7</version>
 	<name>hangout-post-api</name>
 	<description>This service contains all the post related operations for the vendors in Hangout project</description>
 	<properties>
