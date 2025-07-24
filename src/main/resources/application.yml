@@ -49,6 +49,7 @@ spring:
       auto-offset-reset: earliest
   cache:
     cache-names:
+    - findAddress
     - findNearbyPosts
     caffeine:
       spec: maximumSize=50,expireAfterWrite=2m

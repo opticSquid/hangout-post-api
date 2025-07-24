@@ -110,6 +110,7 @@ public class PostService {
 
     @WithSpan(value = "get-near-by-posts service")
     @Cacheable("findNearbyPosts")
+    @Transactional
     public PostsList findNearByPosts(GetPostsDTO searchParams) {
         log.debug("search params: {}", searchParams);
         Integer pageNumber = searchParams.pageNumber() > 1 ? searchParams.pageNumber() : 1;
