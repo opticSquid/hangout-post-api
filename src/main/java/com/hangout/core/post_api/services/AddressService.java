@@ -3,6 +3,8 @@ package com.hangout.core.post_api.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 
 @Service
+@EnableCaching
 public class AddressService {
     private final AuthorizationService authorizationService;
     private final RestClient restClient;
@@ -42,6 +45,7 @@ public class AddressService {
     }
 
     @WithSpan(kind = SpanKind.CLIENT, value = "external api call")
+    @Cacheable("findAddress")
     private Optional<AddressDetails> callReverseGeoCodingApi(Double lat, Double lon) {
         ResponseEntity<AddressResponse> response = restClient
                 .get()
