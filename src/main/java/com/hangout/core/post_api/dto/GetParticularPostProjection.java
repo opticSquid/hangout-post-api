@@ -1,22 +1,19 @@
 package com.hangout.core.post_api.dto;
 
-import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
 
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
 
+import com.hangout.core.post_api.entities.ProcessStatus;
+
 public interface GetParticularPostProjection {
     UUID getPostId();
 
-    BigInteger getOwnerId();
-
     String getFilename();
 
-    String getContentType();
-
-    String getPostDescription();
+    ProcessStatus getProcessStatus();
 
     Integer getHearts();
 

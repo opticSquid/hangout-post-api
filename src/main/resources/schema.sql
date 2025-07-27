@@ -66,5 +66,8 @@ create table
 -- Adding a QuadTree GiST index on the geometry colum for faster search
 CREATE INDEX CONCURRENTLY IF NOT EXISTS locationIndex ON post USING GIST (location);
 
+-- Adding an index on owner_id so that posts of a particular user can be fetched easily
+CREATE INDEX CONCURRENTLY IF NOT EXISTS ownerIndex on post (owner_id);
+
 -- Forcing postgres to update information about added index on geolocation to use in further queries
 ANALYZE post (location);
