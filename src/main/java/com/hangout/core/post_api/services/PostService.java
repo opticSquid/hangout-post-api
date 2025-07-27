@@ -111,20 +111,17 @@ public class PostService {
     @WithSpan(value = "get-near-by-posts service")
     @Cacheable("findNearbyPosts")
     @Transactional
-    public PostsList findNearByPosts(GetPostsDTO searchParams) {
+    public PostsList<GetNearbyPostsProjection> findNearByPosts(GetPostsDTO searchParams) {
         log.debug("search params: {}", searchParams);
         Integer pageNumber = searchParams.pageNumber() > 1 ? searchParams.pageNumber() : 1;
         Integer offset = pageLength * (pageNumber - 1);
         Point userLocation = buildPoint(searchParams.lat(), searchParams.lon());
         List<GetNearbyPostsProjection> nearbyPosts = postRepo.getAllNearbyPosts(userLocation,
                 searchParams.minSearchRadius(), searchParams.maxSearchRadius(), offset, pageLength);
-        PostsList postsList;
-
         Integer totalCount = postRepo.getAllNearbyPostsCount(userLocation, searchParams.minSearchRadius(),
                 searchParams.maxSearchRadius());
         Integer totalPages = (int) Math.ceil((double) totalCount / pageLength);
-        postsList = new PostsList(nearbyPosts, pageNumber, totalPages);
-        return postsList;
+        return new PostsList<GetNearbyPostsProjection>(nearbyPosts, pageNumber, totalPages);
     }
 
     @WithSpan(value = "get-particular-post service")
@@ -138,9 +135,14 @@ public class PostService {
     }
 
     @WithSpan(value = "get-my-posts service")
-    public List<GetParticularPostProjection> getMyPosts(String authToken) {
+    @Transactional
+    public PostsList<GetParticularPostProjection> getMyPosts(String authToken, Integer pageNumber) {
         Session session = authorizationService.authorizeUser(authToken);
-        return postRepo.getPostsByOwnerId(session.userId());
+        Integer offset = pageLength * (pageNumber - 1);
+        List<GetParticularPostProjection> posts = postRepo.getPostsByOwnerId(session.userId(), offset, pageLength);
+        Integer postCount = postRepo.getPostCountByOwnerId(session.userId());
+        Integer totalPages = (int) Math.ceil((double) postCount / pageLength);
+        return new PostsList<GetParticularPostProjection>(posts, pageNumber, totalPages);
     }
 
     @WithSpan(value = "increase heart count service")
