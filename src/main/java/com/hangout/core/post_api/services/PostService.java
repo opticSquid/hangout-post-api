@@ -135,6 +135,7 @@ public class PostService {
     }
 
     @WithSpan(value = "get-my-posts service")
+    @Transactional
     public PostsList<GetParticularPostProjection> getMyPosts(String authToken, Integer pageNumber) {
         Session session = authorizationService.authorizeUser(authToken);
         Integer offset = pageLength * (pageNumber - 1);
