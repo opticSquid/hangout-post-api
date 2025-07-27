@@ -20,22 +20,22 @@ import jakarta.transaction.Transactional;
 public interface PostRepo extends JpaRepository<Post, UUID> {
         @Modifying
         @Transactional
-        @Query(value = "UPDATE POST P SET P.COMMENTS = P.Comments+1, P.INTERACTIONS = P.INTERACTIONS+1 where P.POST_ID = :postId", nativeQuery = true)
+        @Query(value = "UPDATE POST SET COMMENTS = Comments+1, INTERACTIONS = INTERACTIONS+1 where POST_ID = :postId", nativeQuery = true)
         void increaseCommentCount(@Param("postId") UUID postId);
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE POST P SET P.HEARTS = P.HEARTS+1, P.INTERACTIONS = P.INTERACTIONS+1 where P.POST_ID = :postId", nativeQuery = true)
+        @Query(value = "UPDATE POST SET HEARTS = HEARTS+1, INTERACTIONS = INTERACTIONS+1 where POST_ID = :postId", nativeQuery = true)
         void increaseHeartCount(@Param("postId") UUID postId);
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE POST P SET P.HEARTS = CASE WHEN P.HEARTS > 0  THEN P.HEARTS - 1 ELSE 0 END, P.INTERACTIONS = P.INTERACTIONS where P.POST_ID = :postId", nativeQuery = true)
+        @Query(value = "UPDATE POST SET HEARTS = CASE WHEN HEARTS > 0  THEN HEARTS - 1 ELSE 0 END, INTERACTIONS = INTERACTIONS where POST_ID = :postId", nativeQuery = true)
         void decreaseHeartCount(@Param("postId") UUID postId);
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE post SET interactions = interactions+1 WHERE post_id = :postId", nativeQuery = true)
+        @Query(value = "UPDATE POST SET INTERACTIONS = INTERACTIONS+1 WHERE POST_ID = :postId", nativeQuery = true)
         void increaseInteractionCount(@Param("postId") UUID postId);
 
         @Query(value = "SELECT P.POST_ID, P.OWNER_ID, P.FILENAME, P.POST_DESCRIPTION, P.HEARTS, P.COMMENTS, P.INTERACTIONS, P.CREATED_AT, P.STATE, P.CITY, P.LOCATION, ST_DISTANCE(:userLocation, P.LOCATION) AS DISTANCE FROM POST P JOIN MEDIA M ON P.FILENAME = M.FILENAME WHERE ST_DWITHIN(:userLocation, P.LOCATION, :maxSearchRadius) AND NOT ST_DWITHIN(:userLocation, P.LOCATION, :minSearchRadius) AND M.PROCESS_STATUS = 'SUCCESS' ORDER BY P.LOCATION <-> :userLocation ASC OFFSET :offset LIMIT :limit;", nativeQuery = true)
