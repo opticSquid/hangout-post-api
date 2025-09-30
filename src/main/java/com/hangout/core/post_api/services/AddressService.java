@@ -1,5 +1,6 @@
 package com.hangout.core.post_api.services;
 
+import java.net.URI;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -49,19 +50,16 @@ public class AddressService {
     @WithSpan(kind = SpanKind.CLIENT, value = "external api call")
     @Cacheable("findAddress")
     private Optional<AddressDetails> callReverseGeoCodingApi(Double lat, Double lon) {
-        log.debug("api key value: {}", apiKey);
+        URI uri = URI
+                .create("v1/geocode/reverse?lat=" + lat + "&lon=" + lon + "&lang=en&apiKey=" + apiKey);
+        log.debug("uri being called {}", uri);
         ResponseEntity<AddressResponse> response = restClient
                 .get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("v1/geocode/reverse")
-                        .queryParam("lat", lat)
-                        .queryParam("lon", lon)
-                        .queryParam("lang", "en")
-                        .queryParam("apiKey", apiKey)
-                        .build())
+                .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .toEntity(AddressResponse.class);
+        log.debug("response received {}", response);
         if (response.getStatusCode().is2xxSuccessful()) {
             return Optional.of(new AddressDetails(response.getBody().features().getFirst().properties().state(),
                     response.getBody().features().getFirst().properties().city()));
