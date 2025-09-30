@@ -18,8 +18,10 @@ import com.hangout.core.post_api.utils.AuthorizationService;
 
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @EnableCaching
 public class AddressService {
     private final AuthorizationService authorizationService;
@@ -47,6 +49,7 @@ public class AddressService {
     @WithSpan(kind = SpanKind.CLIENT, value = "external api call")
     @Cacheable("findAddress")
     private Optional<AddressDetails> callReverseGeoCodingApi(Double lat, Double lon) {
+        log.debug("api key value: {}", apiKey);
         ResponseEntity<AddressResponse> response = restClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
