@@ -42,8 +42,8 @@ hangout:
       topic: content
     heart:
       topic: hearts
-      maxPollRecords: 100
-      fetchMinBytes: 1024
+      maxPollRecords: 1500
+      fetchMinBytes: 3072
       fetchMaxWaitMs: 10000
   auth-service:
     url: http://localhost:80/auth-api/v1

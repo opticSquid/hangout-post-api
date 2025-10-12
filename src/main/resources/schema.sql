@@ -31,19 +31,28 @@ create table
             filename varchar(513),
             primary key (post_id)
     );
-    
+
+-- Adding a QuadTree GiST index on the geometry colum for faster search
+CREATE INDEX CONCURRENTLY IF NOT EXISTS locationIndex ON post USING GIST (location);
+
+-- Adding an index on owner_id so that posts of a particular user can be fetched easily
+CREATE INDEX CONCURRENTLY IF NOT EXISTS ownerIndex on post (owner_id);
+
+-- Forcing postgres to update information about added index on geolocation to use in further queries
+ANALYZE post (location);
+
 create table
     if not exists comment (
         comment_id uuid not null,
         created_at timestamp(6)
         with
             time zone,
-        replies integer,
-        text varchar(500),
-        top_level boolean,
-        user_id numeric(38, 0),
-        post_id uuid,
-        primary key (comment_id)
+            replies integer,
+            text varchar(500),
+            top_level boolean,
+            user_id numeric(38, 0),
+            post_id uuid,
+            primary key (comment_id)
     );
 
 create table
@@ -54,20 +63,11 @@ create table
         primary key (keeper_id)
     );
 
-create table 
-    if not exists heart (
-        heart_id numeric(38,0) not null,
-        user_id numeric(38,0),
-        post_id uuid,
-        primary key (heart_id)
+CREATE TABLE
+    IF NOT EXISTS heart (
+        post_id UUID NOT NULL,
+        user_id NUMERIC(38, 0) NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        CONSTRAINT pk_heart PRIMARY KEY (post_id, user_id),
+        CONSTRAINT fk_heart_post FOREIGN KEY (post_id) REFERENCES post (post_id) ON DELETE CASCADE
     );
-
-
--- Adding a QuadTree GiST index on the geometry colum for faster search
-CREATE INDEX CONCURRENTLY IF NOT EXISTS locationIndex ON post USING GIST (location);
-
--- Adding an index on owner_id so that posts of a particular user can be fetched easily
-CREATE INDEX CONCURRENTLY IF NOT EXISTS ownerIndex on post (owner_id);
-
--- Forcing postgres to update information about added index on geolocation to use in further queries
-ANALYZE post (location);
