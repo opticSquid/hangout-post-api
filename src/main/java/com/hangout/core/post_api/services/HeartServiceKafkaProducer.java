@@ -1,6 +1,6 @@
 package com.hangout.core.post_api.services;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class HeartServiceKafkaProducer {
-    private final KafkaTemplate<UUID, HeartEvent> kafkaTemplate;
+    private final KafkaTemplate<String, HeartEvent> kafkaTemplate;
     private final AuthorizationService authorizationService;
     @Value("${hangout.kafka.heart.topic}")
     private String heartTopic;
@@ -29,8 +29,8 @@ public class HeartServiceKafkaProducer {
     public DefaultResponse addHeart(String authToken, NewHeartRequest heartRequest) {
         Session session = authorizationService.authorizeUser(authToken);
         if (session.userId() != null) {
-            kafkaTemplate.send(heartTopic,
-                    new HeartEvent(ActionType.ADD, heartRequest.postId(), session.userId()));
+            kafkaTemplate.send(heartTopic, heartRequest.postId().toString(),
+                    new HeartEvent(ActionType.ADD, heartRequest.postId(), session.userId(), LocalDateTime.now()));
             return new DefaultResponse("hearted post");
         } else {
             return new DefaultResponse("user not authorized can not heart post");
@@ -41,8 +41,8 @@ public class HeartServiceKafkaProducer {
     public DefaultResponse removeHeart(String authToken, NewHeartRequest heartRequest) {
         Session session = authorizationService.authorizeUser(authToken);
         if (session.userId() != null) {
-            kafkaTemplate.send(heartTopic,
-                    new HeartEvent(ActionType.REMOVE, heartRequest.postId(), session.userId()));
+            kafkaTemplate.send(heartTopic, heartRequest.postId().toString(),
+                    new HeartEvent(ActionType.REMOVE, heartRequest.postId(), session.userId(), LocalDateTime.now()));
             return new DefaultResponse("remvoed heart from post");
         } else {
             return new DefaultResponse("user not authorized can not remove heart from post");

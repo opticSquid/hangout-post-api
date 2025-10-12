@@ -145,11 +145,6 @@ public class PostService {
         return new PostsList<GetParticularPostProjection>(posts, pageNumber, totalPages);
     }
 
-    @WithSpan(value = "increase heart count service")
-    public void increaseHeartCount(UUID postId) {
-        postRepo.increaseHeartCount(postId);
-    }
-
     /**
      * upload the file given by the user in the post to storage service.
      * internally uploads the file to Minio/s3 bucket
