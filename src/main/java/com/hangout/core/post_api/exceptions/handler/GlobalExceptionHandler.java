@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.hangout.core.post_api.exceptions.AwsS3ClientException;
 import com.hangout.core.post_api.exceptions.ConnectionFailed;
 import com.hangout.core.post_api.exceptions.FileUploadFailed;
 import com.hangout.core.post_api.exceptions.NoDataFound;
@@ -46,6 +47,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ProblemDetail exceptionHandler(ConnectionFailed ex) {
 		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NO_CONTENT, ex.getMessage());
 		problem.setTitle("Connection Failed...");
+		return problem;
+	}
+
+	@ExceptionHandler(AwsS3ClientException.class)
+	public ProblemDetail exceptionHandler(AwsS3ClientException ex) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NO_CONTENT, ex.getMessage());
+		problem.setTitle("Connection Failed to S3...");
 		return problem;
 	}
 }

@@ -48,8 +48,8 @@ spring:
       auto-offset-reset: earliest
   cache:
     cache-names:
-    - findAddress
-    - findNearbyPosts
+      - findAddress
+      - findNearbyPosts
     caffeine:
       spec: maximumSize=50,expireAfterWrite=2m
 
@@ -85,10 +85,8 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
 
-minio:
-  url: ${MINIO_SERVER}
-  accessKey: ${MINIO_ACCESS_KEY}
-  secretKey: ${MINIO_SECRET_KEY}
+aws:
+  region: ${AWS_REGION}
 
 logging:
   level:
