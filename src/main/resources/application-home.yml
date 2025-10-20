@@ -31,10 +31,8 @@ otel:
     otlp:
       endpoint: http://localhost:4317
 
-minio:
-  url: http://localhost:9000
-  accessKey: sy22NKhjmHHCxGkSxn4h
-  secretKey: iBfNydMCIC1KT4qBAj8RB8kaMLpXZ5yI41CTf6Ox
+aws:
+  region: ap-south-1
 
 hangout:
   kafka:
@@ -48,7 +46,7 @@ hangout:
   auth-service:
     url: http://localhost:80/auth-api/v1
   media:
-    upload-bucket: upload
+    upload-bucket: hangout-uploaded
   allowed-origins:
     url: http://localhost:5137,
   page-length: 25
