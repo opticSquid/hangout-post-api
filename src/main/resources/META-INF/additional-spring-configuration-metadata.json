@@ -1,21 +1,6 @@
 {
     "properties": [
         {
-            "name": "minio.url",
-            "type": "java.lang.String",
-            "description": "Address to the server of the Minio/S3 service"
-        },
-        {
-            "name": "minio.accessKey",
-            "type": "java.lang.String",
-            "description": "Access Key to be used to authenticate with Minio/S3 service"
-        },
-        {
-            "name": "minio.secretKey",
-            "type": "java.lang.String",
-            "description": "Secret Key to be used to authenticate with Minio/S3 service"
-        },
-        {
             "name": "hangout.otel-collector.url",
             "type": "java.lang.String",
             "description": "URL of Open Telemetry collector. It is used to ship telemetry from app to telemetry backends"
@@ -79,6 +64,11 @@
             "name": "hangout.address-api.api-key",
             "type": "java.lang.String",
             "description": "API Key of address api"
+        },
+        {
+            "name": "aws.region",
+            "type": "java.lang.String",
+            "description": "Region where the s3 bucket is located"
         }
     ]
 }

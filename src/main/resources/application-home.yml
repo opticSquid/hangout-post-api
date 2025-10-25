@@ -44,9 +44,9 @@ hangout:
       fetchMinBytes: 3072
       fetchMaxWaitMs: 10000
   auth-service:
-    url: http://localhost:80/auth-api/v1
+    url: http://localhost:5011/auth-api/v1
   media:
-    upload-bucket: hangout-uploaded
+    upload-bucket: dev-upload-hangout
   allowed-origins:
     url: http://localhost:5137,
   page-length: 25

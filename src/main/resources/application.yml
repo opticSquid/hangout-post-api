@@ -2,13 +2,16 @@ server:
   port: 5013
   servlet:
     context-path: /post-api
+
 spring:
   application:
     name: hangout-post-api
   servlet:
     multipart:
-      max-file-size: 1GB
-      max-request-size: 1048MB
+      max-file-size: 500MB
+      max-request-size: 501MB
+      file-size-threshold: 5MB
+      location: /tmp/content-uploads
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${DB_URL}/${DB_NAME}
