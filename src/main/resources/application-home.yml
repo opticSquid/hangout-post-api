@@ -46,7 +46,7 @@ hangout:
   auth-service:
     url: http://localhost:5011/auth-api/v1
   media:
-    upload-bucket: dev-upload-hangout
+    upload-bucket: test-upload-hangout
   allowed-origins:
     url: http://localhost:5137,
   page-length: 25
