@@ -1,7 +1,7 @@
 package com.hangout.core.post_api.utils;
 
 import java.io.IOException;
-import java.math.BigInteger;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -18,31 +18,42 @@ public class HashService {
     private static final String ALGORITHM = "SHA3-512";
 
     /**
-     * Computes the sha3-512 hash of a file and concatenates with original file
-     * extesion to give the new file name
-     * 
-     * @param file
-     * @return new file name for internal use
-     * @throws FileUploadException
+     * Computes a hash of the file and concatenates with the original file extension
+     * to give a safe, deterministic filename.
      */
     @WithSpan(value = "compute internal filename")
     public String computeInternalFilename(MultipartFile file) throws FileUploadException {
-        byte[] data;
-        try {
-            data = file.getBytes();
-            try {
-                byte[] hash = MessageDigest.getInstance(ALGORITHM).digest(data);
-                String checksum = new BigInteger(1, hash).toString(16);
-                int lastDotIndex = file.getOriginalFilename().lastIndexOf('.');
-                String originalfileExtension = file.getOriginalFilename().substring(lastDotIndex + 1);
-                checksum += "." + originalfileExtension;
-                return checksum;
-            } catch (NoSuchAlgorithmException ex) {
-                throw new IllegalArgumentException(ex);
+        try (InputStream is = file.getInputStream()) {
+            MessageDigest digest = MessageDigest.getInstance(ALGORITHM);
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                digest.update(buffer, 0, bytesRead);
             }
+            String checksum = toHex(digest.digest());
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null) {
+                int lastDotIndex = originalFilename.lastIndexOf('.');
+                if (lastDotIndex != -1 && lastDotIndex < originalFilename.length() - 1) {
+                    extension = originalFilename.substring(lastDotIndex + 1);
+                }
+            }
+            return extension.isEmpty() ? checksum : (checksum + "." + extension);
         } catch (IOException e) {
             throw new FileUploadException(
-                    "the file contents can not be processed may be the file is corrupted. Please check and reupload");
+                    "The file contents cannot be processed. The file may be corrupted. Please check and reupload.");
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalArgumentException(ex);
         }
+    }
+
+    private String toHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(Character.forDigit((b >> 4) & 0xF, 16));
+            sb.append(Character.forDigit((b & 0xF), 16));
+        }
+        return sb.toString();
     }
 }

@@ -41,3 +41,6 @@ build/
 
 ### application secret file ###
 application-secret.yaml
+
+### java flight recorder files ###
+*.jfr
