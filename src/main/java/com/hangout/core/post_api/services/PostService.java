@@ -98,6 +98,13 @@ public class PostService {
                     post = this.postRepo.save(post);
                     media.addPost(post);
                     this.mediaRepo.save(media);
+                    try {
+                        this.kafkaTemplate.send(topic,
+                                new FileUploadEvent(internalFilename, file.getContentType(), session.userId()));
+                    } catch (IllegalStateException e) {
+                        throw new FileUploadFailed(
+                                "Failed to produce kafka event for file: " + file.getOriginalFilename());
+                    }
                     return new PostCreationResponse(post.getPostId());
 
                 } else {
@@ -158,12 +165,6 @@ public class PostService {
     @WithSpan(value = "create-post file upload service")
     private void uploadMedias(Session session, MultipartFile file, String internalFilename) {
         fileUploadService.uploadFile(internalFilename, file);
-        try {
-            this.kafkaTemplate.send(topic,
-                    new FileUploadEvent(internalFilename, file.getContentType(), session.userId()));
-        } catch (IllegalStateException e) {
-            throw new FileUploadFailed("Failed to produce kafka event for file: " + file.getOriginalFilename());
-        }
     }
 
     @WithSpan(value = "convert to Point data type service")
