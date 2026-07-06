@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring-doc.version>3.0.1</spring-doc.version>
-		<geolatte.version>1.10</geolatte.version>
+		<geolatte.version>1.11</geolatte.version>
 		<otel.version>2.21.0</otel.version>
 		<aws.java.sdk.version>2.35.10</aws.java.sdk.version>
 	</properties>
