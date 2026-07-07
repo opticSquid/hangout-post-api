@@ -6,20 +6,20 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version>
+		<version>3.5.16</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hangout.core</groupId>
 	<artifactId>hangout-post-api</artifactId>
-	<version>1.7.1</version>
+	<version>1.7.2</version>
 	<name>hangout-post-api</name>
 	<description>This service contains all the post related operations for the vendors in Hangout project</description>
 	<properties>
 		<java.version>21</java.version>
-		<spring-doc.version>3.0.1</spring-doc.version>
-		<geolatte.version>1.10</geolatte.version>
-		<otel.version>2.21.0</otel.version>
-		<aws.java.sdk.version>2.35.10</aws.java.sdk.version>
+		<spring-doc.version>3.0.3</spring-doc.version>
+		<geolatte.version>1.11</geolatte.version>
+		<otel.version>2.29.0</otel.version>
+		<aws.java.sdk.version>2.46.21</aws.java.sdk.version>
 	</properties>
 	<dependencies>
 		<!--START

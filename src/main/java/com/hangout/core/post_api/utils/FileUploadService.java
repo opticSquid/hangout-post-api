@@ -4,7 +4,6 @@ import com.hangout.core.post_api.exceptions.FileUploadFailed;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,11 +18,13 @@ import java.io.IOException;
 @Slf4j
 public class FileUploadService {
 
-    @Autowired
-    private S3Client s3Client;
+    private final S3Client s3Client;
+    private final String uploadBucket;
 
-    @Value("${hangout.media.upload-bucket}")
-    private String uploadBucket;
+    public FileUploadService(S3Client s3Client, @Value("${hangout.media.upload-bucket}") String uploadBucket) {
+        this.s3Client = s3Client;
+        this.uploadBucket = uploadBucket;
+    }
 
     @WithSpan(kind = SpanKind.CLIENT, value = "cloud storage upload file call")
     public void uploadFile(String internalName, MultipartFile multipartFile) {
