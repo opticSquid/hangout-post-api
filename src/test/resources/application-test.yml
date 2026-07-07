@@ -7,6 +7,11 @@ spring:
     properties:
       hibernate:
         "[format_sql]": true
+        jdbc:
+          "[batch_size]": 30
+        "[order_inserts]": true
+        "[order_deletes]": true
+        "[generate_statistics]": true
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -47,15 +52,35 @@ minio:
   accessKey: IevColMiX5eBAZUPmfN6
   secretKey: G8HC3uphX1TlDDYSxtjTrFSVdRe95XJXV2IhqEYg
 
+aws:
+  region: ap-south-1
+  endpoint-url: http://localhost:9000  # overridden dynamically in tests
+
+otel:
+  exporter:
+    otlp:
+      endpoint: http://localhost:4317
+
 hangout:
+  kafka:
+    content:
+      topic: test-content
+    heart:
+      topic: test-hearts
+      maxPollRecords: 100
+      fetchMinBytes: 1024
+      fetchMaxWaitMs: 500
   auth-service:
     url: http://localhost:5011
   media:
     upload-bucket: hangout-upload-path
   otel-collector:
     url: http://localhost:4318
-  allowed-origns:
+  allowed-origins:
     url: http://localhost:3000
   page-length: 25
   log:
-    path: /home/soumalya/Development/Hangout/core-services/hangout-post-api/logs
+    path: /tmp/hangout-post-api-logs
+  address-api:
+    base-url: http://localhost:5012
+    api-key: test-api-key
